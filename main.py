@@ -14,25 +14,40 @@ root = Tk()
 
 SIZE = 40
 
+# dummy data
+lst = [(1, 'Raj', 1200),
+       (2, 'Aaryan', 800),
+       (3, 'Vaishnavi', 200),
+       (4, 'Rachna', 2100),
+       (5, 'Shubham', 210)]
+
+# find total number of rows and
+# columns in list
+total_rows = len(lst)
+total_columns = len(lst[0])
+
+
 def send_data():
     es = Elasticsearch(['localhost:9200'])
     User = username.get()
     Pass = password.get()
     query = {
-        "Username":User,
-        "Password":Pass,
-        "Score":0
+        "Username": User,
+        "Password": Pass,
+        "Score": 0
     }
     i = 1
-    print(User,Pass)
+    print(User, Pass)
+
 
 def get_data(name):
     es = Elasticsearch(['localhost:9200'])
-    #es.search(index='Users', body = {"query": {"match:" {"Name" : name}}})
+    # es.search(index='Users', body = {"query": {"match:" {"Name" : name}}})
+
 
 class Apple:
     def __init__(self, parent_screen):
-        self.image = pygame.image.load("C:/Users/intel/PycharmProjects/game/frog.jpg")
+        self.image = pygame.image.load("game/frog.jpg")
         self.parent_screen = parent_screen
         self.x = SIZE * 3
         self.y = SIZE * 3
@@ -50,7 +65,7 @@ class Snake:
     def __init__(self, surface, length):
         self.length = length
         self.parent_screen = surface
-        self.block = pygame.image.load("C:/Users/intel/PycharmProjects/game/block.jpg").convert()
+        self.block = pygame.image.load("game/block.jpg").convert()
         self.x = [SIZE] * length
         self.y = [SIZE] * length
         self.direction = "down"
@@ -113,7 +128,7 @@ class Game:
         return False
 
     def render_background(self):
-        bg = pygame.image.load("C:/Users/intel/PycharmProjects/game/background.jpg")
+        bg = pygame.image.load("game/background.jpg")
         self.surface.blit(bg, (0, 0))
 
     def play(self):
@@ -141,6 +156,8 @@ class Game:
         line1 = font.render(f"Game Over! your score is {(self.snake.length - 1) * 10}", True, (200, 200, 200))
         self.surface.blit(line1, (200, 300))
         pygame.display.flip()
+        pygame.quit()
+        display_score_screen()
 
     def reset(self):
         self.snake = Snake(self.surface, 1)
@@ -156,6 +173,7 @@ class Game:
                     if event.key == K_ESCAPE:
                         running = False
                         pygame.quit()
+                        display_score_screen()
                     if event.key == K_RETURN:
                         pause = False
 
@@ -183,9 +201,9 @@ class Game:
             except Exception as e:
                 self.show_game_over()
                 pause = True
-                self.reset()#set a layout in reset of exiting and or restart game
+                self.reset()  # set a layout in reset of exiting and or restart game
 
-            time.sleep(.5)
+            time.sleep(.2)
 
 
 def login():
@@ -212,7 +230,7 @@ def login():
     password_login_entry = Entry(login_screen, textvariable=password_verify, show='*')
     password_login_entry.pack()
     Label(login_screen, text="").pack()
-    Button(login_screen, text="Login", width=10, height=1, command=send_data).pack()
+    Button(login_screen, text="Login", width=10, height=1, command=login_verify).pack()
 
 
 def register():
@@ -238,7 +256,7 @@ def register():
     password_entry = Entry(register_screen, textvariable=password, show='*')
     password_entry.pack()
     Label(register_screen, text="").pack()
-    Button(register_screen, text="Register", width=10, height=1, command=login_verify).pack()
+    Button(register_screen, text="Register", width=10, height=1, command=register_user).pack()
 
 
 def register_user():
@@ -320,6 +338,38 @@ def password_not_recognised():
     password_not_recog_screen.geometry("150x100")
     Label(password_not_recog_screen, text="Invalid Password ").pack()
     Button(password_not_recog_screen, text="OK", command=delete_password_not_recognised).pack()
+
+
+def display_score_screen():
+    global new
+    new  = Tk()
+    new.geometry("800x500")
+    new.title("Scores")
+    Entry(new, width=20, fg='blue', font=('Arial', 16, 'bold'))
+    # code for creating table
+    for i in range(total_rows):
+        for j in range(total_columns):
+            e = Entry(new, width=20, fg='blue', font=('Arial', 16, 'bold'))
+            e.grid(row=i, column=j)
+            e.insert(END, lst[i][j])
+    Label(text="").grid(row=6, column=0)
+    Label(text="").grid(row=7, column=0)
+    Label(text="").grid(row=8, column=0)
+    Label(text="").grid(row=9, column=0)
+    Label(text="").grid(row=10, column=0)
+    Label(text="").grid(row=6, column=2)
+    Label(text="").grid(row=7, column=2)
+    Label(text="").grid(row=8, column=2)
+    Label(text="").grid(row=9, column=2)
+    Label(text="").grid(row=10, column=2)
+    Button(text="Exit", height="2", width="30", command=quit).grid(row=11, column=0)
+    Button(text="Restart", height="2", width="30", command=rerun_game).grid(row=11, column=2)
+    new.mainloop()
+
+def rerun_game():
+    new.destroy()
+    game = Game()
+    game.run()
 
 
 def main():
