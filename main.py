@@ -238,7 +238,7 @@ def register():
     password_entry = Entry(register_screen, textvariable=password, show='*')
     password_entry.pack()
     Label(register_screen, text="").pack()
-    Button(register_screen, text="Register", width=10, height=1, command=login_verify).pack()
+    Button(register_screen, text="Register", width=10, height=1, command=register_user).pack()
 
 
 def register_user():
